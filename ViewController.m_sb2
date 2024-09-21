@@ -1,0 +1,140 @@
+// ignore this file unless you're going to mess around SpringBoard
+
+#import "ViewController.h"
+#import "UIKitPrivate.h"
+#include <dlfcn.h>
+#include <mach/mach.h>
+#include <sys/mman.h>
+
+void showDialog(UIViewController *viewController, NSString* title, NSString* message) {
+    UIAlertController* alert = [UIAlertController alertControllerWithTitle:title
+        message:message
+        preferredStyle:UIAlertControllerStyleAlert];
+    //text.dataDetectorTypes = UIDataDetectorTypeLink;
+    UIAlertAction* okAction = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil];
+    [alert addAction:okAction];
+
+    [viewController presentViewController:alert animated:YES completion:nil];
+}
+
+@interface SBExternalDisplayApplicationSceneSpecification : UIApplicationSceneSpecification
+- (NSString *)uiSceneSessionRole;
+@end
+
+@implementation SBExternalDisplayApplicationSceneSpecification
+- (NSString *)uiSceneSessionRole {
+    return @"SBWindowSceneSessionRoleExternalDisplay";
+}
+@end
+
+@interface UIScenePresentationContext : NSObject
+- (UIScenePresentationContext *)_initWithDefaultValues;
+@end
+
+@interface _UISceneLayerHostContainerView : UIView
+- (instancetype)initWithScene:(FBScene *)scene debugDescription:(NSString *)desc;
+- (void)_setPresentationContext:(UIScenePresentationContext *)context;
+@end
+
+@interface UIApplication()
+- (void)launchApplicationWithIdentifier:(NSString *)identifier suspended:(BOOL)suspended;
+@end
+
+@interface ViewController ()
+@property(nonatomic) UIScenePresentationManager *presentationManager;
+@property(nonatomic) _UIScenePresenter *presenter;
+@property(nonatomic) _UIScenePresenterOwner *owner;
+//UVInjectedScene *uvScene;
+@end
+
+@implementation ViewController
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    self.view.backgroundColor = UIColor.systemBackgroundColor;
+    self.title = @"FrontBoardAppLauncher";
+
+// PreviewsServicesUI
+// [UVInjectedScene injectInProcess:PID error:&error];
+// [UVInjectedScene _injectInProcessHandle:handle error:&error];
+
+    NSString *bundleID = @"com.apple.SpringBoard";
+    //[self launch:bundleID];
+
+    RBSProcessIdentity* identity = [RBSProcessIdentity identityForDaemonJobLabel:bundleID];
+//identityForApplicationJobLabel:nil bundleID:bundleID platform:2];
+    RBSProcessPredicate* predicate = [RBSProcessPredicate predicateMatchingIdentity:identity];
+    RBSProcessHandle* processHandle = [RBSProcessHandle handleForPredicate:predicate error:nil];
+
+/*
+    NSError *error;
+    self.uvScene = [UVInjectedScene injectInProcess:processHandle.rbs_pid error:&error];
+    if (error) {
+        showDialog(self, @"Error", [NSString stringWithFormat:@"RBS %@ pid %d\n%@", processHandle, processHandle.rbs_pid, error.localizedDescription]);
+        return;
+    }
+
+    UVSceneHost *host = [UVSceneHost createWithInjectedScene:self.uvScene error:&error];
+    [self.view addSubview:host];
+*/
+
+/*
+    FBScene *scene = self.uvScene.scene;
+    _UISceneLayerHostContainerView *layerHostView = [[NSClassFromString(@"_UISceneLayerHostContainerView") alloc] initWithScene:scene debugDescription:@"Debug"];
+    [layerHostView _setPresentationContext:[[UIScenePresentationContext alloc] _initWithDefaultValues]];
+    [self.view addSubview:layerHostView];
+*/
+
+    FBProcessManager *manager = FBProcessManager.sharedInstance;
+    [manager registerProcessForAuditToken:processHandle.auditToken];
+    NSString *identifier = @"SpringBoardInjectedScene";
+
+    // FBSDisplayConfiguration
+    id displayConfig = UIScreen.mainScreen.displayConfiguration;
+//[[FBDisplayManager sharedInstance] mainConfiguration];
+    //[FBDisplayManager mainConfiguration];
+
+    // In [PBAAppDelegate _createInitialAppScene]:
+    FBSMutableSceneDefinition *definition = [FBSMutableSceneDefinition definition];
+    definition.identity = [FBSSceneIdentity identityForIdentifier:identifier];
+    definition.clientIdentity = [FBSSceneClientIdentity identityForProcessIdentity:identity]; // identityForBundleID
+    definition.specification = [NSClassFromString(@"SBExternalDisplayApplicationSceneSpecification") new];
+    FBSMutableSceneParameters *parameters = [FBSMutableSceneParameters parametersForSpecification:definition.specification];
+
+    UIMutableApplicationSceneSettings *settings = [UIMutableApplicationSceneSettings new];
+    // persistenceIdentifier
+    settings.canShowAlerts = YES;
+    settings.displayConfiguration = displayConfig;
+    settings.foreground = YES;
+    settings.frame = CGRectMake(0, 50, self.view.frame.size.width, self.view.frame.size.height - 100);
+    settings.interfaceOrientation = UIInterfaceOrientationPortrait;
+    //settings.interruptionPolicy = 2; // reconnect
+    settings.level = 1;
+    settings.persistenceIdentifier = NSUUID.UUID.UUIDString;
+    //settings.statusBarDisabled = 1;
+    // settings.previewMaximumSize = 
+    //settings.deviceOrientationEventsEnabled = YES;
+    //[settings.ignoreOcclusionReasons addObject:@"SystemApp"];
+    parameters.settings = settings;
+    //[parameters updateSettingsWithBlock:block];
+
+        UIMutableApplicationSceneClientSettings *clientSettings = [UIMutableApplicationSceneClientSettings new];
+    clientSettings.interfaceOrientation = UIInterfaceOrientationPortrait;
+    clientSettings.statusBarStyle = 0;
+    parameters.clientSettings = clientSettings;
+    //[parameters updateClientSettingsWithBlock:block];
+
+    FBScene *scene = [[FBSceneManager sharedInstance] createSceneWithDefinition:definition initialParameters:parameters];
+
+    self.presentationManager = [[UIScenePresentationManager alloc] _initWithScene:scene];
+    self.owner = [[NSClassFromString(@"_UIScenePresenterOwner") alloc] initWithScenePresentationManager:self.presentationManager context:scene];
+    self.presenter = [[NSClassFromString(@"_UIScenePresenter") alloc] initWithOwner:self.owner identifier:identifier sortContext:@(0)];
+    [self.view addSubview:self.presenter.presentationView];
+    [self.presenter activate];
+}
+
+- (void)launch:(NSString *)bundleID {
+    [UIApplication.sharedApplication launchApplicationWithIdentifier:bundleID suspended:YES]; // When launching the app suspended, it doesn't appear for the user.
+}
+
+@end
