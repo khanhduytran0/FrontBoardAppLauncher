@@ -33,7 +33,7 @@ void showDialog(UIViewController *viewController, NSString* title, NSString* mes
     self.transitionContext = [UIApplicationSceneTransitionContext new];
 
     // Navigation bar
-    self.navigationBar = [[UINavigationBar alloc] initWithFrame:CGRectMake(0, 0, self.frame.size.width, 30)];
+    self.navigationBar = [[UINavigationBar alloc] initWithFrame:CGRectMake(0, 0, self.frame.size.width, 44)];
     self.navigationBar.autoresizingMask = UIViewAutoresizingFlexibleWidth;
     self.navigationBar.overrideUserInterfaceStyle = UIUserInterfaceStyleDark;
     [self.navigationBar.standardAppearance configureWithTransparentBackground];
