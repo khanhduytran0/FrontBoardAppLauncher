@@ -4,6 +4,10 @@ typedef struct {
 	unsigned val[8];
 } SCD_Struct_RB3;
 
+@interface BSCornerRadiusConfiguration : NSObject
+- (id)initWithTopLeft:(CGFloat)tl bottomLeft:(CGFloat)bl bottomRight:(CGFloat)br topRight:(CGFloat)tr;
+@end
+
 // BoardServices
 @interface BSSettings : NSObject
 @end
@@ -16,7 +20,7 @@ typedef struct {
 
 // FrontBoard
 
-@class RBSProcessIdentity, FBProcessExecutableSlice, UIScenePresentationManager, _UIScenePresenter;
+@class RBSProcessIdentity, FBProcessExecutableSlice, UIMutableApplicationSceneSettings, UIMutableApplicationSceneClientSettings, UIScenePresentationManager, _UIScenePresenter;
 
 @interface FBApplicationProcessLaunchTransaction : BSTransaction
 - (instancetype) initWithProcessIdentity:(RBSProcessIdentity *)identity executionContextProvider:(id)providerBlock;
@@ -44,8 +48,14 @@ typedef struct {
 -(id)copyWithZone:(NSZone*)arg1 ;
 @end
 
+@interface FBProcess : NSObject
+- (id)name;
+@end
+
 @interface FBScene : NSObject
+- (FBProcess *)clientProcess;
 - (UIScenePresentationManager *)uiPresentationManager;
+- (void)updateSettings:(UIMutableApplicationSceneSettings *)settings withTransitionContext:(id)context completion:(id)completion;
 @end
 
 @interface FBDisplayManager : NSObject
@@ -93,8 +103,12 @@ typedef struct {
 @interface UIMutableApplicationSceneSettings : NSObject
 @property(nonatomic, assign, readwrite) BOOL canShowAlerts;
 @property(nonatomic, assign) BOOL deviceOrientationEventsEnabled;
+@property(nonatomic, assign, readwrite) BOOL enhancedWindowingEnabled;
 @property(nonatomic, assign, readwrite) NSInteger interruptionPolicy;
 @property(nonatomic, strong, readwrite) NSString *persistenceIdentifier;
+@property (nonatomic, assign, readwrite) UIEdgeInsets peripheryInsets;
+@property (nonatomic, assign, readwrite) UIEdgeInsets safeAreaInsetsPortrait, safeAreaInsetsPortraitUpsideDown, safeAreaInsetsLandscapeLeft, safeAreaInsetsLandscapeRight;
+@property (nonatomic, strong, readwrite) BSCornerRadiusConfiguration *cornerRadiusConfiguration;
 - (CGRect)frame;
 - (NSMutableSet *)ignoreOcclusionReasons;
 - (void)setDisplayConfiguration:(id)c;
@@ -104,11 +118,6 @@ typedef struct {
 - (void)setStatusBarDisabled:(BOOL)disabled;
 - (void)setInterfaceOrientation:(NSInteger)o;
 - (BSSettings *)otherSettings;
-@end
-
-@interface UIMutableApplicationSceneClientSettings : NSObject
-@property(nonatomic, assign) NSInteger interfaceOrientation;
-@property(nonatomic, assign) NSInteger statusBarStyle;
 @end
 
 @interface FBSSceneParameters : NSObject
@@ -135,6 +144,14 @@ typedef struct {
 @end
 
 // UIKit
+@interface UIApplicationSceneTransitionContext : NSObject
+@end
+
+@interface UIMutableApplicationSceneClientSettings : NSObject
+@property(nonatomic, assign) NSInteger interfaceOrientation;
+@property(nonatomic, assign) NSInteger statusBarStyle;
+@end
+
 @interface UIWindow(private)
 - (instancetype)_initWithFrame:(CGRect)frame attached:(BOOL)attached;
 - (void)orderFront:(id)arg1;
@@ -164,12 +181,28 @@ typedef struct {
 
 @interface _UIScenePresenter : NSObject
 @property (nonatomic, assign, readonly) _UIScenePresentationView *presentationView;
+@property(nonatomic, assign, readonly) FBScene *scene;
 - (instancetype)initWithOwner:(_UIScenePresenterOwner *)manager identifier:(NSString *)scene sortContext:(NSNumber *)context;
 - (void)activate;
+- (void)deactivate;
+- (void)invalidate;
 @end
 
 @interface UIRootWindowScenePresentationBinder : UIScenePresentationBinder
 - (instancetype)initWithPriority:(int)pro displayConfiguration:(id)c;
+@end
+
+@interface UIScenePresentationContext : NSObject
+- (UIScenePresentationContext *)_initWithDefaultValues;
+@end
+
+@interface _UISceneLayerHostContainerView : UIView
+- (instancetype)initWithScene:(FBScene *)scene debugDescription:(NSString *)desc;
+- (void)_setPresentationContext:(UIScenePresentationContext *)context;
+@end
+
+@interface UIApplication()
+- (void)launchApplicationWithIdentifier:(NSString *)identifier suspended:(BOOL)suspended;
 @end
 
 // PreviewsServicesUI
