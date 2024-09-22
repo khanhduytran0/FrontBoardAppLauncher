@@ -87,7 +87,6 @@ void showDialog(UIViewController *viewController, NSString* title, NSString* mes
         settings.canShowAlerts = YES;
         settings.cornerRadiusConfiguration = [[BSCornerRadiusConfiguration alloc] initWithTopLeft:self.layer.cornerRadius bottomLeft:self.layer.cornerRadius bottomRight:self.layer.cornerRadius topRight:self.layer.cornerRadius];
         settings.displayConfiguration = UIScreen.mainScreen.displayConfiguration;
-        settings.enhancedWindowingEnabled = YES;
         settings.foreground = YES;
         settings.frame = self.bounds;
         settings.interfaceOrientation = UIInterfaceOrientationPortrait;
@@ -170,7 +169,10 @@ void showDialog(UIViewController *viewController, NSString* title, NSString* mes
     self.view.backgroundColor = UIColor.systemBackgroundColor;
     self.title = @"FrontBoardAppLauncher";
 
+    [self.view addSubview:[[DecoratedAppSceneView alloc] initWithBundleID:@"com.opa334.TrollStore"]];
+    [self.view addSubview:[[DecoratedAppSceneView alloc] initWithBundleID:@"com.apple.tips"]];
     [self.view addSubview:[[DecoratedAppSceneView alloc] initWithBundleID:@"com.apple.mobilesafari"]];
+    [self.view addSubview:[[DecoratedAppSceneView alloc] initWithBundleID:@"com.apple.Preferences"]];
 }
 
 @end

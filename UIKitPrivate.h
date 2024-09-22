@@ -103,7 +103,6 @@ typedef struct {
 @interface UIMutableApplicationSceneSettings : NSObject
 @property(nonatomic, assign, readwrite) BOOL canShowAlerts;
 @property(nonatomic, assign) BOOL deviceOrientationEventsEnabled;
-@property(nonatomic, assign, readwrite) BOOL enhancedWindowingEnabled;
 @property(nonatomic, assign, readwrite) NSInteger interruptionPolicy;
 @property(nonatomic, strong, readwrite) NSString *persistenceIdentifier;
 @property (nonatomic, assign, readwrite) UIEdgeInsets peripheryInsets;
