@@ -10,5 +10,8 @@ iOS 15.0+ are supported.
 iOS 14.x is not yet supported. There is an issue in FrontBoard.
 
 ## Known issues
+- Apps stay running even after closing
 - In-app keyboard offset may be off
+- Keyboard doesn't work when windowed ok top of SpringBoard yet
+- Re-opening an app after closing may crash
 - Single-scene apps may not work yet.

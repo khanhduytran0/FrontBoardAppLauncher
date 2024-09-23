@@ -2,9 +2,19 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>com.apple.QuartzCore.displayable-context</key>
+	<true/>
+	<key>com.apple.QuartzCore.secure-mode</key>
+	<true/>
+	<key>com.apple.backboard.client</key>
+	<true/>
 	<key>com.apple.frontboard.launchapplications</key>
 	<true/>
 	<key>com.apple.private.security.no-sandbox</key>
+	<true/>
+	<key>com.apple.private.security.storage.AppBundles</key>
+	<true/>
+	<key>com.apple.private.security.storage.AppDataContainers</key>
 	<true/>
 	<key>com.apple.runningboard.assertions.frontboard</key>
 	<true/>
@@ -79,6 +89,8 @@
 		<string>RootDomainUserClient</string>
 		<string>IOGPUDeviceUserClient</string>
 	</array>
+	<key>com.apple.springboard-ui.client</key>
+	<true/>
 	<key>com.apple.springboard.statusbarstyleoverrides</key>
 	<true/>
 	<key>com.apple.springboard.statusbarstyleoverrides.coordinator</key>

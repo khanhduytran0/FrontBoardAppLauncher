@@ -4,6 +4,17 @@ typedef struct {
 	unsigned val[8];
 } SCD_Struct_RB3;
 
+@interface LSApplicationProxy : NSObject
+@property(nonatomic, assign, readonly) NSString *bundleIdentifier;
+@property(nonatomic, assign, readonly) NSString *localizedShortName;
+@property(nonatomic, assign, readonly) NSString *primaryIconName;
+@end
+
+@interface LSApplicationWorkspace : NSObject
++ (instancetype)defaultWorkspace;
+- (NSArray <LSApplicationProxy *> *)allInstalledApplications;
+@end
+
 @interface BSCornerRadiusConfiguration : NSObject
 - (id)initWithTopLeft:(CGFloat)tl bottomLeft:(CGFloat)bl bottomRight:(CGFloat)br topRight:(CGFloat)tr;
 @end
@@ -66,6 +77,7 @@ typedef struct {
 @interface FBSSceneClientIdentity : NSObject
 + (instancetype)identityForBundleID:(NSString *)bundleID;
 + (instancetype)identityForProcessIdentity:(RBSProcessIdentity *)identity;
++ (instancetype)localIdentity;
 @end
 
 @interface FBProcessManager : NSObject
@@ -108,6 +120,7 @@ typedef struct {
 @property (nonatomic, assign, readwrite) UIEdgeInsets peripheryInsets;
 @property (nonatomic, assign, readwrite) UIEdgeInsets safeAreaInsetsPortrait, safeAreaInsetsPortraitUpsideDown, safeAreaInsetsLandscapeLeft, safeAreaInsetsLandscapeRight;
 @property (nonatomic, strong, readwrite) BSCornerRadiusConfiguration *cornerRadiusConfiguration;
+- (id)displayConfiguration;
 - (CGRect)frame;
 - (NSMutableSet *)ignoreOcclusionReasons;
 - (void)setDisplayConfiguration:(id)c;
@@ -140,6 +153,10 @@ typedef struct {
 @interface FBSceneManager : NSObject
 + (instancetype)sharedInstance;
 - (FBScene *)createSceneWithDefinition:(id)def initialParameters:(id)params;
+@end
+
+@interface UIImage(internal)
++ (instancetype)_applicationIconImageForBundleIdentifier:(NSString *)bundleID format:(NSInteger)format scale:(CGFloat)scale;
 @end
 
 // UIKit

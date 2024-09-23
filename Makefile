@@ -7,9 +7,15 @@ include $(THEOS)/makefiles/common.mk
 APPLICATION_NAME = FrontBoardAppLauncher
 
 FrontBoardAppLauncher_FILES = \
-  AppDelegate.m SceneDelegate.m ViewController.m main.m
+  AppDelegate.m \
+  DecoratedAppSceneView.m \
+  DecoratedFloatingView.m \
+  LauncherViewController.m \
+  SceneDelegate.m \
+  ViewController.m \
+  main.m
 FrontBoardAppLauncher_FRAMEWORKS = UIKit
-FrontBoardAppLauncher_PRIVATE_FRAMEWORKS = FrontBoard RunningBoardServices
+FrontBoardAppLauncher_PRIVATE_FRAMEWORKS = CoreServices FrontBoard RunningBoardServices
 FrontBoardAppLauncher_CFLAGS = -fcommon -fobjc-arc -Iinclude -I. -Wno-error
 # FrontBoardAppLauncher_LDFLAGS =
 FrontBoardAppLauncher_CODESIGN_FLAGS = -Sentitlements.xml

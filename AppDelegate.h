@@ -3,9 +3,11 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "UIKitPrivate.h"
 
 @interface AppDelegate : UIResponder <UIApplicationDelegate>
 
-@property (strong, nonatomic) UIWindow *window;
+@property(nonatomic) UIRootWindowScenePresentationBinder *binder;
+@property(strong, nonatomic) UIWindow *window;
 
 @end
