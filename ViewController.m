@@ -25,6 +25,8 @@ UINavigationController* navigationVC = [[UINavigationController alloc] initWithR
     launcherView.navigationItem.title = @"FrontBoardAppLauncher";
     [launcherView insertSubview:navigationVC.view atIndex:0];
     [self.view addSubview:launcherView];
+    navigationVC.view.frame = launcherView.bounds;
+    [navigationVC didMoveToParentViewController:self];
 }
 
 @end
