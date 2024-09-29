@@ -9,6 +9,10 @@
     [super layoutSubviews];
     self.layer.backgroundColor = UIColor.clearColor.CGColor;
 }
+
+- (CGFloat)windowLevel {
+    return 10000;
+}
 @end
 
 @implementation AppDelegate
