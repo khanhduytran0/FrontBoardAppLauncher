@@ -10,6 +10,24 @@
 }
 @end
 
+@implementation UIApplication(hook)
+- (BOOL)_supportedOnLockScreen {
+    return YES;
+}
+@end
+
+@implementation UIViewController(hook)
+- (BOOL)_canShowWhileLocked {
+    return YES;
+}
+@end
+
+@implementation UIWindow(hook)
+- (BOOL)_shouldCreateContextAsSecure {
+    return YES;
+}
+@end
+
 void FBSystemShellInitialize(id block);
 
 int main(int argc, char **argv) {
