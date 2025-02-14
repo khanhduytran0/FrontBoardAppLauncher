@@ -7,58 +7,62 @@
 @end
 
 @implementation LauncherViewController
+    -(void)loadView {
+        [super loadView];
+        self.view.backgroundColor = UIColor.systemBackgroundColor;
+        self.title = @"FrontBoardAppLauncher";
 
-- (void)loadView {
-    [super loadView];
-    self.view.backgroundColor = UIColor.systemBackgroundColor;
-    self.title = @"FrontBoardAppLauncher";
-
-    self.apps = LSApplicationWorkspace.defaultWorkspace.allInstalledApplications.mutableCopy;
-    [self.apps sortUsingDescriptors:@[
-        [NSSortDescriptor sortDescriptorWithKey:@"localizedShortName" ascending:YES],
-    ]];
-}
-
-- (UITableViewCell *)tableView:(nonnull UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    NSString *cellID = @"Cell";
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellID];
-    if (cell == nil) {
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:cellID];
+        self.apps = [[NSMutableArray alloc] init];
+        NSArray *app_list = [LSApplicationWorkspace.defaultWorkspace allInstalledApplications];
+        for (LSApplicationProxy *app in app_list) {
+                if ([app.applicationType isEqual:@"User"] || ([app.applicationType isEqual:@"System"] && ![app.appTags containsObject:@"hidden"] && !app.launchProhibited && !app.placeholder && !app.removedSystemApp)) {
+                    [self.apps addObject:app];
+                }
+        }
+        [self.apps sortUsingDescriptors:@[
+            [NSSortDescriptor sortDescriptorWithKey:@"localizedName" ascending:YES],
+        ]];
     }
 
-    cell.textLabel.text = self.apps[indexPath.row].localizedShortName;
-    cell.detailTextLabel.text = self.apps[indexPath.row].bundleIdentifier;
-    cell.imageView.image = [UIImage _applicationIconImageForBundleIdentifier:cell.detailTextLabel.text format:0 scale:UIScreen.mainScreen.scale];
-    return cell;
-}
+    -(UITableViewCell *)tableView:(nonnull UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+        NSString *cellID = @"Cell";
+        UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellID];
+        if (cell == nil) {
+            cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:cellID];
+        }
 
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    [tableView deselectRowAtIndexPath:indexPath animated:NO];
-    DecoratedAppSceneView *view = [[DecoratedAppSceneView alloc] initWithBundleID:self.apps[indexPath.row].bundleIdentifier];
-    CGRect origFrame = view.frame;
-    CGRect cellFrame = view.frame;
+        cell.textLabel.text = self.apps[indexPath.row].localizedName;
+        cell.detailTextLabel.text = self.apps[indexPath.row].bundleIdentifier;
+        cell.imageView.image = [UIImage _applicationIconImageForBundleIdentifier:cell.detailTextLabel.text format:0 scale:UIScreen.mainScreen.scale];
+        return cell;
+    }
 
-    UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
-    cellFrame.origin = [cell.superview convertPoint:cell.frame.origin toView:self.navigationController.parentViewController.view];
-    cellFrame.size = cell.frame.size;
+    -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+        [tableView deselectRowAtIndexPath:indexPath animated:NO];
+        DecoratedAppSceneView *view = [[DecoratedAppSceneView alloc] initWithBundleID:self.apps[indexPath.row]];
+        CGRect origFrame = view.frame;
+        CGRect cellFrame = view.frame;
 
-    view.alpha = 0;
-    view.frame = cellFrame;
-    view.backgroundColor = [UIColor blackColor];
-    [self.navigationController.parentViewController.view addSubview:view];
-    [UIView animateWithDuration:0.4
-    animations:^{
-        view.alpha = 1;
-        view.frame = origFrame;
-    } completion:nil];
-}
+        UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
+        cellFrame.origin = [cell.superview convertPoint:cell.frame.origin toView:self.navigationController.parentViewController.view];
+        cellFrame.size = cell.frame.size;
 
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return 1;
-}
+        view.alpha = 0;
+        view.frame = cellFrame;
+        view.backgroundColor = [UIColor blackColor];
+        [self.navigationController.parentViewController.view addSubview:view];
+        [UIView animateWithDuration:0.4
+        animations:^{
+            view.alpha = 1;
+            view.frame = origFrame;
+        } completion:nil];
+    }
 
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return self.apps.count;
-}
+    -(NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
+        return 1;
+    }
 
+    -(NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+        return self.apps.count;
+    }
 @end
