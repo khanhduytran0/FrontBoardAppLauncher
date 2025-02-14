@@ -4,10 +4,24 @@ typedef struct {
 	unsigned val[8];
 } SCD_Struct_RB3;
 
-@interface LSApplicationProxy : NSObject
-@property(nonatomic, assign, readonly) NSString *bundleIdentifier;
-@property(nonatomic, assign, readonly) NSString *localizedShortName;
-@property(nonatomic, assign, readonly) NSString *primaryIconName;
+@interface LSResourceProxy : NSObject
+	@property (setter=_setLocalizedName:,nonatomic,copy) NSString *localizedName;
+@end
+
+@interface LSBundleProxy : LSResourceProxy
+@end
+
+@interface LSApplicationProxy : LSBundleProxy
+	@property(nonatomic, assign, readonly) NSString *bundleIdentifier;
+	@property(nonatomic, assign, readonly) NSString *localizedShortName;
+	@property(nonatomic, assign, readonly) NSString *primaryIconName;
+
+	@property (nonatomic,readonly) NSString * applicationIdentifier;
+	@property (nonatomic,readonly) NSString * applicationType;
+	@property (nonatomic,readonly) NSArray * appTags;
+	@property (getter=isLaunchProhibited,nonatomic,readonly) BOOL launchProhibited;
+	@property (getter=isPlaceholder,nonatomic,readonly) BOOL placeholder;
+	@property (getter=isRemovedSystemApp,nonatomic,readonly) BOOL removedSystemApp;
 @end
 
 @interface LSApplicationWorkspace : NSObject
@@ -153,6 +167,7 @@ typedef struct {
 @interface FBSceneManager : NSObject
 + (instancetype)sharedInstance;
 - (FBScene *)createSceneWithDefinition:(id)def initialParameters:(id)params;
+-(void)destroyScene:(id)arg1 withTransitionContext:(id)arg2 ;
 @end
 
 @interface UIImage(internal)
@@ -168,12 +183,12 @@ typedef struct {
 @property(nonatomic, assign) NSInteger statusBarStyle;
 @end
 
-@interface UIWindow(private)
+@interface UIWindow (Private)
 - (instancetype)_initWithFrame:(CGRect)frame attached:(BOOL)attached;
 - (void)orderFront:(id)arg1;
 @end
 
-@interface UIScreen(private)
+@interface UIScreen (Private)
 - (CGRect)_referenceBounds;
 - (id)displayConfiguration;
 @end
