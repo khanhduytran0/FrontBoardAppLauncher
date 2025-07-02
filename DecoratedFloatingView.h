@@ -5,6 +5,7 @@
 @property(nonatomic) UINavigationBar *navigationBar;
 @property(nonatomic) UINavigationItem *navigationItem;
 @property(nonatomic) UIView *resizeHandle;
+@property(nonatomic) UIView* contentView;
 
 - (instancetype)initWithFrame:(CGRect)frame navigationBar:(UINavigationBar *)navigationBar;
 

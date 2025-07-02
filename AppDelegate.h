@@ -3,7 +3,7 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "UIKitPrivate.h"
+#import "UIKitPrivate+MultitaskSupport.h"
 
 @interface AppDelegate : UIResponder <UIApplicationDelegate>
 

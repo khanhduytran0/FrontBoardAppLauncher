@@ -1,11 +1,7 @@
-#import "UIKitPrivate.h"
+#import "FoundationPrivate.h"
 #import "DecoratedFloatingView.h"
+#import "AppSceneViewController.h"
 
-@interface DecoratedAppSceneView : DecoratedFloatingView
-    @property(nonatomic) _UIScenePresenter *presenter;
-    @property(nonatomic) UIMutableApplicationSceneSettings *settings;
-    @property(nonatomic) UIApplicationSceneTransitionContext *transitionContext;
-    @property(nonatomic) NSString *sceneID;
-
-    - (instancetype)initWithBundleID:(LSApplicationProxy *)app;
+@interface DecoratedAppSceneView : DecoratedFloatingView<AppSceneViewDelegate>
+- (instancetype)initWithApp:(LSApplicationProxy *)app windowName:(NSString*)windowName;
 @end

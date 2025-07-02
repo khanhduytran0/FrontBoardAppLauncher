@@ -8,9 +8,13 @@ APPLICATION_NAME = FrontBoardAppLauncher
 
 FrontBoardAppLauncher_FILES = \
   AppDelegate.m \
+  AppSceneViewController.m \
   DecoratedAppSceneView.m \
   DecoratedFloatingView.m \
+  Hooks.m \
   LauncherViewController.m \
+  PiPManager.m \
+  ResizeHandleView.m \
   SceneDelegate.m \
   ViewController.m \
   main.m

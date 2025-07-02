@@ -1,13 +1,9 @@
+#import "AppDelegate.h"
 #import "SceneDelegate.h"
 #import "ViewController.h"
-
-@implementation UINavigationBar(forceFullHeightInLandscape)
-
-- (BOOL)forceFullHeightInLandscape {
-  return YES;
-}
-
-@end
+#import "UIKitPrivate+MultitaskSupport.h"
+#import <objc/runtime.h>
+#import "Hooks.h"
 
 @interface SceneDelegate ()
 
@@ -15,14 +11,39 @@
 
 @implementation SceneDelegate
 
+- (void)appDelegate:(AppDelegate *)delegate createFloatingSceneFromScene:(UIWindowScene *)windowScene {
+    delegate.binder = [[UIRootWindowScenePresentationBinder alloc] initWithPriority:0 displayConfiguration:windowScene._effectiveSettings.displayConfiguration];
+    
+    FBSMutableSceneDefinition *definition = [FBSMutableSceneDefinition definition];
+    definition.identity = [FBSSceneIdentity identityForIdentifier:NSBundle.mainBundle.bundleIdentifier];
+    definition.clientIdentity = [FBSSceneClientIdentity localIdentity];
+    definition.specification = [UIApplicationSceneSpecification specification];
+    FBSMutableSceneParameters *parameters = [FBSMutableSceneParameters parametersForSpecification:definition.specification];
+
+    UIMutableApplicationSceneSettings *settings = windowScene._effectiveSettings.mutableCopy;
+    settings.deactivationReasons = 0;
+    settings.foreground = YES;
+    settings.interruptionPolicy = 0;
+    parameters.settings = settings;
+    parameters.clientSettings = windowScene._effectiveUIClientSettings;
+
+    FBScene *scene = [[FBSceneManager sharedInstance] createSceneWithDefinition:definition initialParameters:parameters];
+    [delegate.binder addScene:scene];
+}
+
 - (void)scene:(UIScene *)scene willConnectToSession:(UISceneSession *)session options:(UISceneConnectionOptions *)connectionOptions  {
     UIWindowScene *windowScene = (UIWindowScene *)scene;
+    
+    AppDelegate *delegate = (AppDelegate *)UIApplication.sharedApplication.delegate;
+    if(!delegate.binder) {
+        [self appDelegate:delegate createFloatingSceneFromScene:windowScene];
+    }
+    
     self.window = [[UIWindow alloc] initWithWindowScene:windowScene];
     self.window.frame = windowScene.coordinateSpace.bounds;
     self.window.rootViewController = [ViewController new];
     [self.window makeKeyAndVisible];
 }
-
 
 - (void)sceneDidDisconnect:(UIScene *)scene {
     // Called as the scene is being released by the system.

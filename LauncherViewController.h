@@ -1,5 +1,5 @@
 #import <UIKit/UIKit.h>
-#import "UIKitPrivate.h"
+#import "UIKitPrivate+MultitaskSupport.h"
 
 @interface LauncherViewController : UITableViewController
 

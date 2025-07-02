@@ -14,19 +14,21 @@
     //self.view.backgroundColor = UIColor.systemBackgroundColor;
     self.title = @"FrontBoardAppLauncher";
 
-    LauncherViewController *launcherVC = [LauncherViewController new];
+    UINavigationBar *navigationBar = [[UINavigationBar alloc] initWithFrame:CGRectMake(0, 0, 400, 44)];
+    navigationBar.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+    UINavigationItem *navigationItem = [[UINavigationItem alloc] initWithTitle:@"FrontBoardAppLauncher"];
+    navigationBar.items = @[navigationItem];
     
-UINavigationController* navigationVC = [[UINavigationController alloc] initWithRootViewController:launcherVC];
-    navigationVC.modalPresentationStyle = UIModalPresentationCurrentContext;
-    [self addChildViewController:navigationVC];
+    LauncherViewController *launcherVC = [LauncherViewController new];
+    launcherVC.modalPresentationStyle = UIModalPresentationCurrentContext;
+    [self addChildViewController:launcherVC];
 
-    DecoratedFloatingView *launcherView = [[DecoratedFloatingView alloc] initWithFrame:CGRectMake(0, 0, 400, 400) navigationBar:navigationVC.navigationBar];
+    DecoratedFloatingView *launcherView = [[DecoratedFloatingView alloc] initWithFrame:CGRectMake(0, 0, 400, 400) navigationBar:navigationBar];
     launcherView.center = self.view.center;
-    launcherView.navigationItem.title = @"FrontBoardAppLauncher";
-    [launcherView insertSubview:navigationVC.view atIndex:0];
+    [launcherView.contentView insertSubview:launcherVC.view atIndex:0];
     [self.view addSubview:launcherView];
-    navigationVC.view.frame = launcherView.bounds;
-    [navigationVC didMoveToParentViewController:self];
+    launcherVC.view.frame = launcherView.bounds;
+    [launcherVC didMoveToParentViewController:self];
 }
 
 @end
