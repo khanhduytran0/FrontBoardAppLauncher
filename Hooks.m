@@ -41,7 +41,6 @@ extern CGFloat UIHUDWindowLevel;
     return self.layer;
 }
 
-#if 0
 - (UIWindowBindingDescription)hook__bindingDescription {
     UIWindowBindingDescription desc = [self hook__bindingDescription];
     desc.showsOnTop = YES;
@@ -81,7 +80,6 @@ extern CGFloat UIHUDWindowLevel;
     transformLayer.bounds = unjailedBounds; // Re-set bounds after potential rotation
     transformLayer.masksToBounds = YES;
 }
-#endif
 @end
 
 
@@ -112,6 +110,6 @@ void swizzle(Class class, SEL originalAction, SEL swizzledAction) {
 __attribute__((constructor))
 static void hook_init() {
     //method_setImplementation(class_getInstanceMethod(NSClassFromString(@"UIKeyboardVisualModeManager"), @selector(windowingModeEnabled)), (IMP)returnTrue);
-    //swizzle(UIWindow.class, @selector(_bindingDescription), @selector(hook__bindingDescription));
+    swizzle(UIWindow.class, @selector(_bindingDescription), @selector(hook__bindingDescription));
     swizzle(FBSWorkspaceScenesClient.class, @selector(sceneID:updateWithSettingsDiff:transitionContext:completion:), @selector(hook_sceneID:updateWithSettingsDiff:transitionContext:completion:));
 }

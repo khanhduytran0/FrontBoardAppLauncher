@@ -34,11 +34,6 @@
 - (void)scene:(UIScene *)scene willConnectToSession:(UISceneSession *)session options:(UISceneConnectionOptions *)connectionOptions  {
     UIWindowScene *windowScene = (UIWindowScene *)scene;
     
-    AppDelegate *delegate = (AppDelegate *)UIApplication.sharedApplication.delegate;
-    if(!delegate.binder) {
-        [self appDelegate:delegate createFloatingSceneFromScene:windowScene];
-    }
-    
     self.window = [[UIWindow alloc] initWithWindowScene:windowScene];
     self.window.frame = windowScene.coordinateSpace.bounds;
     self.window.rootViewController = [ViewController new];
